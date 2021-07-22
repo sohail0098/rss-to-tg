@@ -1,0 +1,16 @@
+{
+  "name": "RSS-2-Telegram",
+  "description": "A Python app to send rss links to telegram bot.",
+  "image": "heroku/python",
+  "repository": "https://github.com/DarkenVamp/py_files/rss-to-tg-heroku/rss-heroku.py",
+  "keywords": ["python", "rss", "telegram", "Userbot"],
+  },
+  "environments": {
+    "test": {
+      "scripts": {
+        "test-setup": "python rss-heroku.py",
+        "test": "python rss-heroku.py"
+      }
+    }
+  }
+}
