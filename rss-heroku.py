@@ -28,6 +28,7 @@ def sendmsg(title, link, size, weblink):
         msg = f'**Title:** `{title}`\n'
         msg += f'**Size:** `{size}`\n' if size else None
         msg += f'**Link:** {weblink}'
+        print(msg)
         client.send_message(entity=entity2,message=msg)
 
 
@@ -52,7 +53,7 @@ with TelegramClient(StringSession(STRING_SESSION), API_KEY, API_HASH) as client:
                                 continue
                             elif '1080p' in entry.title:
                                 print(f'Title: {entry.title}')
-                                sendmsg(entry.title, entry.link, entry.nyaa_size if 'Nyaa' in rss.feed.title else None, entry.id)
+                                sendmsg(title = entry.title, link = entry.link, size = entry.nyaa_size if 'Nyaa' in rss.feed.title else None, weblink = entry.id)
                                 list.insert_one({'author': 'ubot', 'title': entry.title, 'url': entry.link})
             print("Sleeping for 60s")
             incr += 1
