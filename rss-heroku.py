@@ -19,13 +19,16 @@ logUserName = os.environ.get('logUserName')
 if chatUserName == None:
     chatUserName = botUserName
 
-def sendmsg(title, link):
+def sendmsg(title, link, size, weblink):
     entity=client.get_entity(chatUserName) # destination/bot/chat/user username/ID/link (only username in quotes, everything else without quotes)
     print(f'Sending {title} to Telegram Chat!')
     client.send_message(entity=entity,message=f'/mirror{botUserName} {link}')
     if logUserName != None:
         entity2=client.get_entity(logUserName) # log channel username/id/link
-        client.send_message(entity=entity2,message=f"**Title:** `{title}`")
+        msg = f'**Title:** `{title}`\n'
+        msg += f'**Size:** `{size}`\n' if size else None
+        msg += f'**Link:** {weblink}'
+        client.send_message(entity=entity2,message=msg)
 
 
 with TelegramClient(StringSession(STRING_SESSION), API_KEY, API_HASH) as client:
@@ -44,21 +47,13 @@ with TelegramClient(StringSession(STRING_SESSION), API_KEY, API_HASH) as client:
                         if entry.title in links['title']:
                             break
                     else:
-                        if 'Nyaa' in rss.feed.title:
-                            print(f'Title: {entry.title}')
-                            sendmsg(entry.title, entry.link)
-                            list.insert_one({'author': 'ubot', 'title': entry.title, 'url': entry.link})
-                            sleep(5)
-                        elif 'RARBG' in rss.feed.title:
-                            if any(word in entry.title for word in KW):
-                                if any(word in entry.title for word in BL):
-                                    continue
-                                else:
-                                    if '1080p' in entry.title:
-                                        print(f'Title: {entry.title}')
-                                        sendmsg(entry.title, entry.link)
-                                        list.insert_one({'author': 'ubot', 'title': entry.title, 'url': entry.link})
-                                        sleep(5)
+                        if any(word in entry.title for word in KW):
+                            if any(word in entry.title for word in BL):
+                                continue
+                            elif '1080p' in entry.title:
+                                print(f'Title: {entry.title}')
+                                sendmsg(entry.title, entry.link, entry.nyaa_size if 'Nyaa' in rss.feed.title else None, entry.id)
+                                list.insert_one({'author': 'ubot', 'title': entry.title, 'url': entry.link})
             print("Sleeping for 60s")
             incr += 1
             sleep(60)
